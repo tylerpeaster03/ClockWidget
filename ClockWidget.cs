@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 /*
  * Implement:
@@ -10,6 +8,8 @@ using System.Windows.Forms;
  * Have a button to hide the widget.
  * Allow app to be added to startup programs, ask user on first run.
  * Allow date to be added as well.
+ * 
+ * Make click-through optional? Can a size and scale option work on a click-through window?
  * 
  * Testing:
  * Test on multi-monitor setups with different resolutions and scaling.
@@ -21,6 +21,7 @@ namespace ClockWidget
     {
         private Label clockLabel;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer? _topMostTimer;
 
         public ClockWidget()
         {
@@ -79,21 +80,15 @@ namespace ClockWidget
             }
         }
 
-        // Apparently, this is the only reliable way to keep a window always on top
-        // Checking once per half-second should have negligible performance impact
-        private void SetAsTopWindow() {
-            new Thread(() =>
+        private void SetAsTopWindow()
+        {
+            _topMostTimer = new System.Windows.Forms.Timer
             {
-                try
-                {
-                    while (true)
-                    {
-                        this.TopMost = true;
-                        Thread.Sleep(500);
-                    }
-                }
-                catch (Exception) { }
-            }).Start();
+                Interval = 500
+            };
+
+            _topMostTimer.Tick += (_, _) => TopMost = true;
+            _topMostTimer.Start();
         }
     }
 }
