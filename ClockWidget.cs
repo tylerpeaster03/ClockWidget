@@ -19,34 +19,37 @@ namespace ClockWidget
 {
     public class ClockWidget : Form
     {
+        //Sets system tray icon
+        NotifyIcon notifyIcon = new NotifyIcon
+        {
+            Icon = Properties.Resources.ClockWidgetIcon,
+            Visible = true,
+            Text = "Clock Widget"
+        };
+
         private Label clockLabel;
-        private System.Windows.Forms.Timer timer;
+        private readonly System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Timer? _topMostTimer;
+        private InternalConfig config = new InternalConfig();
 
         public ClockWidget()
         {
-            // Selects monitor #2 for temp testing
-            var screens = Screen.AllScreens;
-            var targetScreen = screens.Length > 1 ? screens[1] : screens[0];
-
-            // Window style
-            this.FormBorderStyle = FormBorderStyle.None;
+            //Implicit settings
+            this.ShowInTaskbar = false;
             this.StartPosition = FormStartPosition.Manual;
 
-            SetAsTopWindow();
-
-            this.ShowInTaskbar = false;
-            this.BackColor = Color.Black;
-            this.Opacity = 0.7;
-
-            // Adjust size
-            this.Size = new Size(120, 40);
-
-            // Position bottom-right of monitor #2
+            //Explicit settings from config
+            var targetScreen = config.TargetScreen;
+            this.FormBorderStyle = config.Borderless;
+            this.BackColor = config.Color;
+            this.Opacity = config.Opacity;
+            this.Size = new Size(config.ClockSize[0], config.ClockSize[1]);
             this.Location = new Point(
                 targetScreen.WorkingArea.Right - this.Width - 10,
                 targetScreen.WorkingArea.Bottom - this.Height - 10
             );
+
+            SetAsTopWindow();
 
             // Clock label
             clockLabel = new Label()
@@ -66,7 +69,7 @@ namespace ClockWidget
             timer.Start();
         }
 
-        // Make the window click-through
+        //Make the window click-through
         protected override CreateParams CreateParams
         {
             get
