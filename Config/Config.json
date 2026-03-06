@@ -1,0 +1,8 @@
+{
+  "TargetScreen": 0,
+  "ClockSize": [ 120, 40 ],
+  "Borderless": "None",
+  "BackColor": "#000000",
+  "TextColor": "#FFFFFF",
+  "Opacity":  0.7
+}
